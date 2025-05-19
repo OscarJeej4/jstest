@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3D GTA Game</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      width: 100vw; height: 100vh; background: #111;
+    }
+    canvas {
+      display: block;
+    }
+    .controls {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+    .controls button {
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+    #enterCar {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      z-index: 10;
+      padding: 10px 20px;
+      background: #0af;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="game"></canvas>
+
+<div class="controls">
+  <button id="left">◀</button>
+  <button id="up">▲</button>
+  <button id="down">▼</button>
+  <button id="right">▶</button>
+</div>
+
+<button id="enterCar">Enter Car</button>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
