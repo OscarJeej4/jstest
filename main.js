@@ -109,11 +109,29 @@ function addRoad(x, z, width = 4, length = 50, horizontal = true) {
   road.position.set(x, 0.01, z);
   scene.add(road);
 }
-addRoad(0, 0);         // Horizontal
-addRoad(0, -20);       // Horizontal
-addRoad(0, 20);        // Horizontal
-addRoad(-20, 0, 4, 50, false); // Vertical
-addRoad(20, 0, 4, 50, false);  // Vertical
+function addLaneMarkings(x, z, length = 100, horizontal = true) {
+  const dashCount = 20;
+  for (let i = 0; i < dashCount; i++) {
+    const dash = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 0.2),
+      new THREE.MeshBasicMaterial({ color: 0xffffff })
+    );
+    dash.rotation.x = -Math.PI / 2;
+    if (horizontal) {
+      dash.position.set(x - length/2 + i * (length / dashCount), 0.02, z);
+    } else {
+      dash.position.set(x, 0.02, z - length/2 + i * (length / dashCount));
+    }
+    scene.add(dash);
+  }
+}
+
+addRoad(0, 0, 10);         addLaneMarkings(0, 0);
+addRoad(0, -20, 10);       addLaneMarkings(0, -20);
+addRoad(0, 20, 10);        addLaneMarkings(0, 20);
+addRoad(-20, 0, 10, 100, false);  addLaneMarkings(-20, 0, 100, false);
+addRoad(20, 0, 10, 100, false);   addLaneMarkings(20, 0, 100, false);
+
 
 // Add buildings
 function addBuilding(x, z, w = 4, h = 10, d = 4) {
