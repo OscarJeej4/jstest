@@ -2,60 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>3D GTA Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GTA Style Game</title>
   <style>
-    html, body {
-      margin: 0; padding: 0; overflow: hidden;
-      width: 100vw; height: 100vh; background: #111;
+    body, html {
+      margin: 0;
+      overflow: hidden;
     }
     canvas {
       display: block;
     }
-    .controls {
+    #controls {
       position: fixed;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
+      top: 10px;
+      right: 10px;
       z-index: 10;
     }
-    .controls button {
-      width: 60px;
-      height: 60px;
-      font-size: 24px;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: none;
-      border-radius: 8px;
-    }
-    #enterCar {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      z-index: 10;
-      padding: 10px 20px;
-      background: #0af;
-      color: white;
-      border: none;
-      border-radius: 5px;
+    .btn {
+      display: inline-block;
+      background: rgba(255,255,255,0.8);
+      margin: 5px;
+      padding: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-
-<canvas id="game"></canvas>
-
-<div class="controls">
-  <button id="left">◀</button>
-  <button id="up">▲</button>
-  <button id="down">▼</button>
-  <button id="right">▶</button>
-</div>
-
-<button id="enterCar">Enter Car</button>
-
-<script type="module" src="main.js"></script>
+  <div id="controls">
+    <div class="btn" id="up">▲</div><br>
+    <div class="btn" id="left">◀</div>
+    <div class="btn" id="down">▼</div>
+    <div class="btn" id="right">▶</div><br>
+    <div class="btn" id="enterCar">Enter/Exit Car</div>
+  </div>
+  <canvas id="game"></canvas>
+  <script type="module" src="main.js"></script>
 </body>
 </html>
