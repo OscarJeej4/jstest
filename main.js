@@ -98,33 +98,51 @@ window.addEventListener('keyup', (e) => {
 const idMap = { up: 'forward', down: 'backward', left: 'left', right: 'right' };
 document.getElementById('enterCar').addEventListener('click', tryEnterCar);
 
-// Add roads (black strips)
-function addRoad(x, z, width = 4, length = 50, horizontal = true) {
-  const geo = horizontal
-    ? new THREE.PlaneGeometry(length, width)
-    : new THREE.PlaneGeometry(width, length);
-  const mat = new THREE.MeshStandardMaterial({ color: 0x222222 });
-  const road = new THREE.Mesh(geo, mat);
-  road.rotation.x = -Math.PI / 2;
-  road.position.set(x, 0.01, z);
-  scene.add(road);
+// Make a grid of roads and buildings
+const roadSpacing = 20;
+const roadLength = 200;
+const roadWidth = 10;
+
+// Horizontal roads
+for (let z = -60; z <= 60; z += roadSpacing) {
+  addRoad(0, z, roadWidth, roadLength, true);
+  addLaneMarkings(0, z, roadLength, true);
 }
+
+// Vertical roads
+for (let x = -60; x <= 60; x += roadSpacing) {
+  addRoad(x, 0, roadWidth, roadLength, false);
+  addLaneMarkings(x, 0, roadLength, false);
+}
+
+// Add buildings between roads
+for (let x = -50; x <= 50; x += 20) {
+  for (let z = -50; z <= 50; z += 20) {
+    // Skip where roads are
+    if (x % roadSpacing === 0 || z % roadSpacing === 0) continue;
+    addBuilding(x, z, 10, 10, 10);
+  }
+}
+
 function addLaneMarkings(x, z, length = 100, horizontal = true) {
-  const dashCount = 20;
+  const dashCount = 25;
   for (let i = 0; i < dashCount; i++) {
     const dash = new THREE.Mesh(
-      new THREE.PlaneGeometry(1, 0.2),
+      new THREE.PlaneGeometry(2, 0.3),
       new THREE.MeshBasicMaterial({ color: 0xffffff })
     );
     dash.rotation.x = -Math.PI / 2;
+    
     if (horizontal) {
       dash.position.set(x - length/2 + i * (length / dashCount), 0.02, z);
     } else {
       dash.position.set(x, 0.02, z - length/2 + i * (length / dashCount));
     }
+
     scene.add(dash);
   }
 }
+
 
 addRoad(0, 0, 10);         addLaneMarkings(0, 0);
 addRoad(0, -20, 10);       addLaneMarkings(0, -20);
@@ -132,21 +150,6 @@ addRoad(0, 20, 10);        addLaneMarkings(0, 20);
 addRoad(-20, 0, 10, 100, false);  addLaneMarkings(-20, 0, 100, false);
 addRoad(20, 0, 10, 100, false);   addLaneMarkings(20, 0, 100, false);
 
-
-// Add buildings
-function addBuilding(x, z, w = 4, h = 10, d = 4) {
-  const geo = new THREE.BoxGeometry(w, h, d);
-  const mat = new THREE.MeshStandardMaterial({ color: 0x888888 });
-  const b = new THREE.Mesh(geo, mat);
-  b.position.set(x, h / 2, z);
-  scene.add(b);
-}
-for (let x = -30; x <= 30; x += 10) {
-  for (let z = -30; z <= 30; z += 10) {
-    if (Math.abs(x) === 20 || Math.abs(z) === 20) continue; // leave road gaps
-    addBuilding(x, z);
-  }
-}
 
 // Grass
 const grass = new THREE.Mesh(
