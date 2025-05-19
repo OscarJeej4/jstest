@@ -8,9 +8,11 @@ renderer.setPixelRatio(window.devicePixelRatio);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xa0d0ff);
 
+// Camera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 5, 10);
 
+// Lighting
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(5, 10, 7.5);
 scene.add(light);
@@ -29,16 +31,25 @@ const player = new THREE.Mesh(playerGeo, playerMat);
 player.position.y = 1;
 scene.add(player);
 
-// Movement
-let move = { forward: false, backward: false, left: false, right: false };
+// Car
+const carGeo = new THREE.BoxGeometry(2, 1, 4);
+const carMat = new THREE.MeshStandardMaterial({ color: 0x4444ff });
+const car = new THREE.Mesh(carGeo, carMat);
+car.position.set(5, 0.5, 0);
+scene.add(car);
 
-// Keyboard
+// Movement flags
+let move = { forward: false, backward: false, left: false, right: false };
+let inCar = false;
+
+// Controls — Keyboard
 window.addEventListener('keydown', (e) => {
   switch (e.key.toLowerCase()) {
     case 'w': move.forward = true; break;
     case 's': move.backward = true; break;
     case 'a': move.left = true; break;
     case 'd': move.right = true; break;
+    case 'e': tryEnterCar(); break; // Press 'E' to enter/exit
   }
 });
 window.addEventListener('keyup', (e) => {
@@ -50,7 +61,7 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-// Mobile Buttons
+// Controls — Mobile
 document.getElementById('up').addEventListener('touchstart', () => move.forward = true);
 document.getElementById('up').addEventListener('touchend', () => move.forward = false);
 
@@ -63,21 +74,39 @@ document.getElementById('left').addEventListener('touchend', () => move.left = f
 document.getElementById('right').addEventListener('touchstart', () => move.right = true);
 document.getElementById('right').addEventListener('touchend', () => move.right = false);
 
+document.getElementById('enterCar').addEventListener('click', tryEnterCar);
+
+// Switch between player and car
+function tryEnterCar() {
+  const dist = player.position.distanceTo(car.position);
+  if (!inCar && dist < 3) {
+    inCar = true;
+    player.visible = false;
+  } else if (inCar) {
+    inCar = false;
+    player.position.copy(car.position).add(new THREE.Vector3(2, 0, 0));
+    player.visible = true;
+  }
+}
+
 // Animate
 function animate() {
   requestAnimationFrame(animate);
 
-  let speed = 0.1;
-  if (move.forward) player.position.z -= speed;
-  if (move.backward) player.position.z += speed;
-  if (move.left) player.position.x -= speed;
-  if (move.right) player.position.x += speed;
+  const speed = inCar ? 0.2 : 0.1;
+  const object = inCar ? car : player;
 
-  // Follow player
-  camera.position.x = player.position.x;
-  camera.position.z = player.position.z + 10;
-  camera.lookAt(player.position);
+  if (move.forward) object.position.z -= speed;
+  if (move.backward) object.position.z += speed;
+  if (move.left) object.position.x -= speed;
+  if (move.right) object.position.x += speed;
+
+  // Camera follow
+  camera.position.x = object.position.x;
+  camera.position.z = object.position.z + 10;
+  camera.lookAt(object.position);
 
   renderer.render(scene, camera);
 }
+
 animate();
