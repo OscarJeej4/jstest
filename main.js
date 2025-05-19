@@ -41,6 +41,8 @@ scene.add(car);
 // Movement flags
 let move = { forward: false, backward: false, left: false, right: false };
 let inCar = false;
+let carSpeed = 0;
+let carAngle = 0;
 
 // Controls — Keyboard
 window.addEventListener('keydown', (e) => {
@@ -49,7 +51,7 @@ window.addEventListener('keydown', (e) => {
     case 's': move.backward = true; break;
     case 'a': move.left = true; break;
     case 'd': move.right = true; break;
-    case 'e': tryEnterCar(); break; // Press 'E' to enter/exit
+    case 'e': tryEnterCar(); break; // 'E' to enter/exit
   }
 });
 window.addEventListener('keyup', (e) => {
@@ -76,7 +78,7 @@ document.getElementById('right').addEventListener('touchend', () => move.right =
 
 document.getElementById('enterCar').addEventListener('click', tryEnterCar);
 
-// Switch between player and car
+// Enter/Exit car
 function tryEnterCar() {
   const dist = player.position.distanceTo(car.position);
   if (!inCar && dist < 3) {
@@ -86,6 +88,7 @@ function tryEnterCar() {
     inCar = false;
     player.position.copy(car.position).add(new THREE.Vector3(2, 0, 0));
     player.visible = true;
+    carSpeed = 0;
   }
 }
 
@@ -93,18 +96,45 @@ function tryEnterCar() {
 function animate() {
   requestAnimationFrame(animate);
 
-  const speed = inCar ? 0.2 : 0.1;
-  const object = inCar ? car : player;
+  if (inCar) {
+    // Turning
+    if (move.left) car.rotation.y += 0.03;
+    if (move.right) car.rotation.y -= 0.03;
 
-  if (move.forward) object.position.z -= speed;
-  if (move.backward) object.position.z += speed;
-  if (move.left) object.position.x -= speed;
-  if (move.right) object.position.x += speed;
+    // Speed
+    if (move.forward) carSpeed = Math.min(carSpeed + 0.01, 0.2);
+    else if (move.backward) carSpeed = Math.max(carSpeed - 0.01, -0.1);
+    else {
+      // Slow down
+      carSpeed *= 0.95;
+      if (Math.abs(carSpeed) < 0.001) carSpeed = 0;
+    }
 
-  // Camera follow
-  camera.position.x = object.position.x;
-  camera.position.z = object.position.z + 10;
-  camera.lookAt(object.position);
+    // Move forward in direction
+    const dx = Math.sin(car.rotation.y) * carSpeed;
+    const dz = Math.cos(car.rotation.y) * carSpeed;
+    car.position.x += dx;
+    car.position.z += dz;
+
+    // Camera follow
+    camera.position.x = car.position.x - Math.sin(car.rotation.y) * 10;
+    camera.position.z = car.position.z - Math.cos(car.rotation.y) * 10;
+    camera.position.y = 5;
+    camera.lookAt(car.position);
+  } else {
+    // Walking
+    const speed = 0.1;
+    if (move.forward) player.position.z -= speed;
+    if (move.backward) player.position.z += speed;
+    if (move.left) player.position.x -= speed;
+    if (move.right) player.position.x += speed;
+
+    // Camera follow
+    camera.position.x = player.position.x;
+    camera.position.z = player.position.z + 10;
+    camera.position.y = 5;
+    camera.lookAt(player.position);
+  }
 
   renderer.render(scene, camera);
 }
