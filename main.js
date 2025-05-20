@@ -34,6 +34,25 @@ const player = new THREE.Mesh(
 player.position.set(0, 1, 0);
 scene.add(player);
 
+//Building definition
+function addRoad(x, z, width = 10, length = 100, horizontal = true) {
+  const geometry = horizontal
+    ? new THREE.BoxGeometry(length, 0.1, width)
+    : new THREE.BoxGeometry(width, 0.1, length);
+  const material = new THREE.MeshStandardMaterial({ color: 0x333333 });
+  const road = new THREE.Mesh(geometry, material);
+  road.position.set(x, 0.01, z);
+  scene.add(road);
+}
+
+function addBuilding(x, z, w = 10, h = 10, d = 10) {
+  const geometry = new THREE.BoxGeometry(w, h, d);
+  const material = new THREE.MeshStandardMaterial({ color: 0xbbbbbb });
+  const building = new THREE.Mesh(geometry, material);
+  building.position.set(x, h / 2, z);
+  scene.add(building);
+}
+
 // Drivable cars (including original)
 const cars = [];
 function addCar(x, z, color = 0x4444ff) {
